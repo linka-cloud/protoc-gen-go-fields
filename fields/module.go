@@ -45,9 +45,6 @@ func (p *goFields) generate(f pgs.File) {
 	if len(f.Messages()) == 0 {
 		return
 	}
-	for _, msg := range f.Messages() {
-		_ = msg
-	}
 	name := p.ctx.OutputPath(f).SetExt(".fields.go")
 	p.AddGeneratorTemplateFile(name.String(), p.tpl, f)
 }
@@ -68,23 +65,3 @@ var {{ name . }}Fields = struct {
 
 {{ end }}
 `
-
-var _ = struct {
-	String string
-	Int string
-	Message struct{
-		String string
-		Int string
-	}
-}{
-	String: "string",
-	Int: "int",
-	Message: struct {
-		String string
-		Int    string
-	}{
-		String: "string",
-		Int: "int",
-	},
-}
-

@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package go.fields.test;
+
+option go_package = "go.linka.cloud/protoc-gen-go-fields/tests/pb/test";
+
+
+message Test {
+  message Inner {
+    string one = 1;
+    string two = 2;
+  }
+  string a_string = 1;
+  int64 an_int = 2;
+  Sub sub_message = 3;
+  Inner inner_message = 4;
+
+  oneof oneof {
+    Sub sub_oneof = 5;
+    Inner inner_oneof = 6;
+  }
+}
+
+message Sub {
+  string field_one = 1;
+  int32 field_two = 2;
+}

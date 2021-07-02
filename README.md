@@ -6,6 +6,11 @@
 
 NB: Its original purpose was only to test [protoc-gen-star](github.com/lyft/protoc-gen-star).
 
+## Installation
+
+```bash
+go get go.linka.cloud/protoc-gen-go-fields
+```
 
 ## Overview
 
@@ -40,6 +45,12 @@ message Sub {
   int32 field_two = 2;
 }
 
+```
+
+Generate go definitions using `protoc`:
+
+```bash
+protoc -I. --go_out=paths=source_relative:. --go-fields_out=paths=source_relative:. tests/pb/test.proto
 ```
 
 Generated Fields structs:

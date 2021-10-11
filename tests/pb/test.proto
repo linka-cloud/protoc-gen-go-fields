@@ -39,3 +39,24 @@ message Sub {
   string field_one = 1;
   int32 field_two = 2;
 }
+
+message TestOptional {
+  message Inner {
+    optional string one = 1;
+    optional string two = 2;
+  }
+  optional string a_string = 1;
+  optional int64 an_int = 2;
+  Sub sub_message = 3;
+  Inner inner_message = 4;
+
+  oneof oneof {
+    Sub sub_oneof = 5;
+    Inner inner_oneof = 6;
+  }
+}
+
+message SubOptional {
+  string field_one = 1;
+  int32 field_two = 2;
+}

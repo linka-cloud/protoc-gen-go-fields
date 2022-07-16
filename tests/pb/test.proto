@@ -18,6 +18,10 @@ package go.fields.test;
 
 option go_package = "go.linka.cloud/protoc-gen-go-fields/tests/pb/test";
 
+service TestService {
+  rpc Call(Test) returns (Test);
+}
+
 
 message Test {
   message Inner {

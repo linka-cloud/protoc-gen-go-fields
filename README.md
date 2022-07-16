@@ -2,7 +2,7 @@
 
 *This project is currently in **alpha**. The API should be considered unstable and likely to change*
 
-**protoc-gen-go-fields** is a protoc plugin to generate golang structs containing fields protobuf names. 
+**protoc-gen-go-fields** is a protoc plugin to generate golang structs containing fields protobuf names and services methods names. 
 
 NB: Its original purpose was only to test [protoc-gen-star](github.com/lyft/protoc-gen-star).
 
@@ -23,6 +23,9 @@ package go.fields.test;
 
 option go_package = "go.linka.cloud/protoc-gen-go-fields/tests/pb/test";
 
+service TestService {
+  rpc Call(Test) returns (Test);
+}
 
 message Test {
   message Inner {
@@ -53,9 +56,15 @@ Generate go definitions using `protoc`:
 protoc -I. --go_out=paths=source_relative:. --go-fields_out=paths=source_relative:. tests/pb/test.proto
 ```
 
-Generated Fields structs:
+Generated Fields and Service Methods structs:
 ```go
 package test
+
+var TestServiceMethods = struct {
+	Call string
+}{
+	Call: "/go.fields.test.TestService/Call",
+}
 
 var TestFields = struct {
 	AString      string

@@ -16,6 +16,12 @@
 
 package test
 
+var TestServiceMethods = struct {
+	Call string
+}{
+	Call: "/go.fields.test.TestService/Call",
+}
+
 var TestFields = struct {
 	AString      string
 	AnInt        string

@@ -68,7 +68,7 @@ func (p *goFields) Execute(targets map[string]pgs.File, _ map[string]pgs.Package
 }
 
 func (p *goFields) generate(f pgs.File) {
-	if len(f.Messages()) == 0 || len(f.Services()) == 0 {
+	if len(f.Messages()) == 0 && len(f.Services()) == 0 {
 		return
 	}
 	name := p.ctx.OutputPath(f).SetExt(".fields.go")

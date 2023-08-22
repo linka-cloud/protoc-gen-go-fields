@@ -18,6 +18,11 @@ package go.fields.test;
 
 option go_package = "go.linka.cloud/protoc-gen-go-fields/tests/pb/test";
 
+import "patch/go.proto";
+
+
+option (go.lint) = {all: true, initialisms: ["URL"]};
+
 service TestService {
   rpc Call(Test) returns (Test);
 }
@@ -34,9 +39,11 @@ message Test {
   Inner inner_message = 4;
 
   oneof oneof {
-    Sub sub_oneof = 5;
-    Inner inner_oneof = 6;
+    Sub sub_oneof = 5 [(go.field).name = "SubOneOf"];
+    Inner inner_oneof = 6 [(go.field).name = "InnerOneOf"];
   }
+
+  string url = 7;
 }
 
 message Sub {

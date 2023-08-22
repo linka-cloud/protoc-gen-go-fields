@@ -18,9 +18,22 @@ import (
 	"strings"
 	"text/template"
 
+	golint "github.com/alta/protopatch/lint"
+	"github.com/alta/protopatch/patch/gopb"
+	"github.com/golang/protobuf/proto"
 	pgs "github.com/lyft/protoc-gen-star"
 	pgsgo "github.com/lyft/protoc-gen-star/lang/go"
 )
+
+type Extension interface {
+	pgs.Node
+	Extension(desc *proto.ExtensionDesc, ext interface{}) (ok bool, err error)
+	File() pgs.File
+}
+
+type Parent interface {
+	pgs.Node
+}
 
 func Module() *goFields {
 	return &goFields{
@@ -38,13 +51,42 @@ func (p *goFields) Name() string {
 	return "go-fields"
 }
 
+func maybeRename(ctx pgsgo.Context, n Extension) pgs.Name {
+	var field gopb.Options
+	if ok, _ := n.Extension(gopb.E_Field, &field); ok && field.Name != nil {
+		return pgs.Name(field.GetName())
+	}
+	var lint gopb.LintOptions
+	if ok, _ := n.File().Extension(gopb.E_Lint, &lint); !ok {
+		return ctx.Name(n)
+	}
+	var ok bool
+	switch n.(type) {
+	case pgs.Field:
+		ok = lint.GetAll() || lint.GetFields()
+	case pgs.Message:
+		ok = lint.GetAll() || lint.GetMessages()
+	case pgs.Enum:
+		ok = lint.GetAll() || lint.GetEnums()
+	}
+	if ok {
+		return pgs.Name(golint.Name(ctx.Name(n).String(), lint.InitialismsMap()))
+	}
+	return ctx.Name(n)
+}
+
 func (p *goFields) InitContext(c pgs.BuildContext) {
 	p.ModuleBase.InitContext(c)
 	p.ctx = pgsgo.InitContext(c.Parameters())
 
 	tpl := template.New("fields").Funcs(map[string]interface{}{
 		"package": p.ctx.PackageName,
-		"name":    p.ctx.Name,
+		"name": func(node pgs.Node) pgs.Name {
+			if n, ok := any(node).(Extension); ok {
+				return maybeRename(p.ctx, n)
+			}
+			return p.ctx.Name(node)
+		},
 		"comment": func(s string) string {
 			var out string
 			parts := strings.Split(s, "\n")

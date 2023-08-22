@@ -27,15 +27,17 @@ var TestFields = struct {
 	AnInt        string
 	SubMessage   string
 	InnerMessage string
-	SubOneof     string
-	InnerOneof   string
+	SubOneOf     string
+	InnerOneOf   string
+	URL          string
 }{
 	AString:      "a_string",
 	AnInt:        "an_int",
 	SubMessage:   "sub_message",
 	InnerMessage: "inner_message",
-	SubOneof:     "sub_oneof",
-	InnerOneof:   "inner_oneof",
+	SubOneOf:     "sub_oneof",
+	InnerOneOf:   "inner_oneof",
+	URL:          "url",
 }
 
 var SubFields = struct {
@@ -70,7 +72,7 @@ var SubOptionalFields = struct {
 	FieldTwo: "field_two",
 }
 
-var Test_InnerFields = struct {
+var TestInnerFields = struct {
 	One string
 	Two string
 }{
@@ -78,7 +80,7 @@ var Test_InnerFields = struct {
 	Two: "two",
 }
 
-var TestOptional_InnerFields = struct {
+var TestOptionalInnerFields = struct {
 	One string
 	Two string
 }{

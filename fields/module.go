@@ -148,19 +148,6 @@ const fieldsTpl = `{{ comment .SyntaxSourceCodeInfo.LeadingComments }}
 package {{ package . }}
 
 {{ $file := . }}
-{{ range .Services }}
-{{- $svc := . }} 
-var {{ .Name }}Methods = struct {
-	{{- range .Methods }}
-	{{ name . }} string
-	{{- end }}
-}{
-	{{- range .Methods }}
-	{{ name . }}: "/{{ $file.Package.ProtoName }}.{{ $svc.Name }}/{{ .Name }}",
-	{{- end }}
-}
-{{ end }}
-
 {{ range (filter .AllMessages) }}
 
 var {{ name . }}Fields = struct {

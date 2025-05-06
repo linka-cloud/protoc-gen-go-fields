@@ -16,6 +16,7 @@ package fields
 
 import (
 	"regexp"
+	"slices"
 	"strings"
 	"text/template"
 
@@ -44,9 +45,10 @@ func Module() *goFields {
 
 type goFields struct {
 	*pgs.ModuleBase
-	ctx  pgsgo.Context
-	tpl  *template.Template
-	skip *regexp.Regexp
+	ctx     pgsgo.Context
+	tpl     *template.Template
+	skip    *regexp.Regexp
+	include []string
 }
 
 func (p *goFields) Name() string {
@@ -87,6 +89,9 @@ func (p *goFields) InitContext(c pgs.BuildContext) {
 			p.Failf("invalid skip regex: %v", err)
 		}
 	}
+	if v, ok := c.Parameters()["include"]; ok {
+		p.include = strings.Split(v, ",")
+	}
 
 	tpl := template.New("fields").Funcs(map[string]interface{}{
 		"package": p.ctx.PackageName,
@@ -113,7 +118,7 @@ func (p *goFields) InitContext(c pgs.BuildContext) {
 			}
 			var out []pgs.Message
 			for _, v := range ms {
-				if p.skip.MatchString(v.Name().String()) {
+				if p.skip.MatchString(v.Name().String()) && !slices.Contains(p.include, v.Name().String()) {
 					continue
 				}
 				out = append(out, v)

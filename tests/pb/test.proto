@@ -71,3 +71,13 @@ message SubOptional {
   string field_one = 1;
   int32 field_two = 2;
 }
+
+message MessageRequest {
+  string field_one = 1;
+  int32 field_two = 2;
+}
+
+message MessageResponse {
+  string field_one = 1;
+  int32 field_two = 2;
+}

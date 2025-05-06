@@ -15,6 +15,7 @@
 package fields
 
 import (
+	"regexp"
 	"strings"
 	"text/template"
 
@@ -43,8 +44,9 @@ func Module() *goFields {
 
 type goFields struct {
 	*pgs.ModuleBase
-	ctx pgsgo.Context
-	tpl *template.Template
+	ctx  pgsgo.Context
+	tpl  *template.Template
+	skip *regexp.Regexp
 }
 
 func (p *goFields) Name() string {
@@ -78,6 +80,13 @@ func maybeRename(ctx pgsgo.Context, n Extension) pgs.Name {
 func (p *goFields) InitContext(c pgs.BuildContext) {
 	p.ModuleBase.InitContext(c)
 	p.ctx = pgsgo.InitContext(c.Parameters())
+	if v, ok := c.Parameters()["skip"]; ok {
+		var err error
+		p.skip, err = regexp.Compile(v)
+		if err != nil {
+			p.Failf("invalid skip regex: %v", err)
+		}
+	}
 
 	tpl := template.New("fields").Funcs(map[string]interface{}{
 		"package": p.ctx.PackageName,
@@ -95,6 +104,19 @@ func (p *goFields) InitContext(c pgs.BuildContext) {
 					return out
 				}
 				out += "//" + v + "\n"
+			}
+			return out
+		},
+		"filter": func(ms []pgs.Message) []pgs.Message {
+			if p.skip == nil {
+				return ms
+			}
+			var out []pgs.Message
+			for _, v := range ms {
+				if p.skip.MatchString(v.Name().String()) {
+					continue
+				}
+				out = append(out, v)
 			}
 			return out
 		},
@@ -139,7 +161,7 @@ var {{ .Name }}Methods = struct {
 }
 {{ end }}
 
-{{ range .AllMessages }}
+{{ range (filter .AllMessages) }}
 
 var {{ name . }}Fields = struct {
 	{{- range .Fields }}
